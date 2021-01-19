@@ -74,5 +74,5 @@ resource "null_resource" "invoke_ansible" {
   provisioner "local-exec" {
     command = "scripts/configure-systems.sh ${var.org_name}"
   }
-  depends_on = [azurerm_windows_virtual_machine.ad, azurerm_windows_virtual_machine.wkstn_01]
+  depends_on = [azurerm_windows_virtual_machine.ad, azurerm_windows_virtual_machine.wkstn_01, azurerm_windows_virtual_machine.wkstn_02]
 }
