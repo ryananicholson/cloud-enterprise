@@ -30,10 +30,10 @@ ansible_ssh_pass=P@$$w0rd1234!
 ansible_winrm_transport=basic
 ansible_winrm_server_cert_validation=ignore
 EOF
-gsed -e "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/dc.yml.bak > playbooks/dc.yml
-gsed -i "s@WORKID@$WORKID@g" playbooks/dc.yml
-gsed -i "s@WORKKEY@$WORKKEY@g" playbooks/dc.yml
-gsed -i "s@TOKEN@$REGTOKEN@g" playbooks/dc.yml 
+sed -e "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/dc.yml.bak > playbooks/dc.yml
+sed -i "s@WORKID@$WORKID@g" playbooks/dc.yml
+sed -i "s@WORKKEY@$WORKKEY@g" playbooks/dc.yml
+sed -i "s@TOKEN@$REGTOKEN@g" playbooks/dc.yml 
 docker run --rm -v "${PWD}":/work ansible ansible-playbook -i ad-hosts playbooks/dc.yml
 
 # Configure Workstations
@@ -60,9 +60,9 @@ ansible_winrm_server_cert_validation=ignore
 EOF
 
 DNSADDR=$(az vm show -d -g $RESOURCE_GROUP -n $AD --query privateIps -o tsv)
-gsed -e "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/wkstn.yml.bak > playbooks/wkstn.yml
-gsed -i "s/DNSADDR/$DNSADDR/g" playbooks/wkstn.yml
-gsed -i "s@WORKID@$WORKID@g" playbooks/wkstn.yml
-gsed -i "s@WORKKEY@$WORKKEY@g" playbooks/wkstn.yml
-gsed -i "s@TOKEN@$REGTOKEN@g" playbooks/wkstn.yml 
+sed -e "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/wkstn.yml.bak > playbooks/wkstn.yml
+sed -i "s/DNSADDR/$DNSADDR/g" playbooks/wkstn.yml
+sed -i "s@WORKID@$WORKID@g" playbooks/wkstn.yml
+sed -i "s@WORKKEY@$WORKKEY@g" playbooks/wkstn.yml
+sed -i "s@TOKEN@$REGTOKEN@g" playbooks/wkstn.yml 
 docker run --rm -v "${PWD}":/work ansible ansible-playbook -i wkstn-hosts playbooks/wkstn.yml
