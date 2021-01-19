@@ -4,6 +4,7 @@
 RESOURCE_GROUP=$1
 WORKID=$(jq -r '.resources[] | select(.type == "azurerm_log_analytics_workspace") .instances[].attributes.workspace_id' terraform.tfstate)
 WORKKEY=$(jq -r '.resources[] | select(.type == "azurerm_log_analytics_workspace") .instances[].attributes.primary_shared_key' terraform.tfstate)
+TOKEN=$(pwsh -c '(New-AzWvdRegistrationInfo -ResourceGroupName cent -HostPoolName cent-pool -ExpirationTime $((get-date).ToUniversalTime().AddHours(2).ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"))).Token' | grep -v VERBOSE | tr -d '\n')
 
 # Enable WinRM on all Windows systems
 for VM in $(az vm list | jq -r '.[] | select(.osProfile.windowsConfiguration != null) .name'); do
@@ -32,6 +33,7 @@ EOF
 gsed -e "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/dc.yml.bak > playbooks/dc.yml
 gsed -i "s@WORKID@$WORKID@g" playbooks/dc.yml
 gsed -i "s@WORKKEY@$WORKKEY@g" playbooks/dc.yml
+gsed -i "s@TOKEN@$REGTOKEN@g" playbooks/dc.yml 
 docker run --rm -v "${PWD}":/work ansible ansible-playbook -i ad-hosts playbooks/dc.yml
 
 # Configure Workstations
@@ -62,4 +64,5 @@ gsed -e "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/wkstn.yml.bak > playbooks/wkstn.y
 gsed -i "s/DNSADDR/$DNSADDR/g" playbooks/wkstn.yml
 gsed -i "s@WORKID@$WORKID@g" playbooks/wkstn.yml
 gsed -i "s@WORKKEY@$WORKKEY@g" playbooks/wkstn.yml
+gsed -i "s@TOKEN@$REGTOKEN@g" playbooks/wkstn.yml 
 docker run --rm -v "${PWD}":/work ansible ansible-playbook -i wkstn-hosts playbooks/wkstn.yml

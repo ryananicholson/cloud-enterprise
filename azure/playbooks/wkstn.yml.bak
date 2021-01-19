@@ -16,13 +16,20 @@
     - name: Reboot
       ansible.windows.win_reboot:
       when: domain_state.reboot_required
-    - name: Download Log Analytics Agent
-      ansible.windows.win_get_url:
-        url: https://go.microsoft.com/fwlink/?LinkId=828603
-        dest: C:\logagent.exe
+    - name: Copy Log Analytics Agent
+      ansible.windows.win_copy:
+        src: log-agent.exe
+        dest: C:\log-agent.exe
     - name: Extract Log Analytics files
-      ansible.windows.win_command: logagent.exe /c /t:C:\loganalytics
+      ansible.windows.win_command: log-agent.exe /c /t:C:\loganalytics
     - name: Install Log Analytics agent
       ansible.windows.win_command: setup.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_AZURE_CLOUD_TYPE=0 OPINSIGHTS_WORKSPACE_ID="WORKID" OPINSIGHTS_WORKSPACE_KEY="WORKKEY" AcceptEndUserLicenseAgreement=1
       args:
         chdir: C:\loganalytics
+    - name: Copy VDI Agent
+      ansible.windows.win_copy:
+        src: vdi-agent.msi
+        dest: C:\vdi-agent.msi
+    - name: Install VDI Agent
+      ansible.windows.win_shell: |
+        Start-Process -FilePath "msiexec.exe" -ArgumentList "/i C:\vdi-agent.msi", "/quiet", "/qn", "/norestart", "/passive", "REGISTRATIONTOKEN=REGTOKEN", "/l* C:\Users\AgentInstall.txt" -Wait -Passthru
