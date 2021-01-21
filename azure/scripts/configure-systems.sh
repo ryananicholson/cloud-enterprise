@@ -34,7 +34,7 @@ sed -e "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/dc.yml.bak > playbooks/dc.yml
 sed -i "s@WORKID@$WORKID@g" playbooks/dc.yml
 sed -i "s@WORKKEY@$WORKKEY@g" playbooks/dc.yml
 sed -i "s@TOKEN@$REGTOKEN@g" playbooks/dc.yml 
-docker run --rm -v "${PWD}":/work ansible ansible-playbook -i ad-hosts playbooks/dc.yml
+ansible-playbook -i ad-hosts playbooks/dc.yml
 
 # Configure Workstations
 cat << EOF > wkstn-hosts
@@ -65,4 +65,4 @@ sed -i "s/DNSADDR/$DNSADDR/g" playbooks/wkstn.yml
 sed -i "s@WORKID@$WORKID@g" playbooks/wkstn.yml
 sed -i "s@WORKKEY@$WORKKEY@g" playbooks/wkstn.yml
 sed -i "s@TOKEN@$REGTOKEN@g" playbooks/wkstn.yml 
-docker run --rm -v "${PWD}":/work ansible ansible-playbook -i wkstn-hosts playbooks/wkstn.yml
+ansible-playbook -i wkstn-hosts playbooks/wkstn.yml
