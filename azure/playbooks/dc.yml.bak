@@ -76,7 +76,7 @@
         src: log-agent.exe
         dest: C:\log-agent.exe
     - name: Extract Log Analytics files
-      ansible.windows.win_command: log-agent.exe /c /t:C:\loganalytics
+      ansible.windows.win_command: C:\log-agent.exe /c /t:C:\loganalytics
     - name: Install Log Analytics agent
       ansible.windows.win_command: setup.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_AZURE_CLOUD_TYPE=0 OPINSIGHTS_WORKSPACE_ID="WORKID" OPINSIGHTS_WORKSPACE_KEY="WORKKEY" AcceptEndUserLicenseAgreement=1
       args:
