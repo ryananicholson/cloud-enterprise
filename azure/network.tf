@@ -63,7 +63,7 @@ resource "azurerm_network_security_group" "cent_server_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3389"
-    source_address_prefix      = "${chomp(data.http.myip.body)}/32"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
   security_rule {
@@ -78,8 +78,19 @@ resource "azurerm_network_security_group" "cent_server_nsg" {
     destination_address_prefix = "*"
   }
   security_rule {
-    name                       = "WorkstationTraffic"
+    name                       = "SSH"
     priority                   = 300
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "WorkstationTraffic"
+    priority                   = 400
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "*"
@@ -106,6 +117,13 @@ resource "azurerm_public_ip" "wkstn_02_pip" {
 
 resource "azurerm_public_ip" "ad_pip" {
   name                = "${var.ad}_pubip"
+  resource_group_name = azurerm_resource_group.cent_rg.name
+  location            = azurerm_resource_group.cent_rg.location
+  allocation_method   = "Dynamic"
+}
+
+resource "azurerm_public_ip" "linux1_pip" {
+  name                = "${var.linux1}_pubip"
   resource_group_name = azurerm_resource_group.cent_rg.name
   location            = azurerm_resource_group.cent_rg.location
   allocation_method   = "Dynamic"
@@ -153,6 +171,20 @@ resource "azurerm_network_interface" "cent_ad_nic" {
   }
 }
 
+resource "azurerm_network_interface" "cent_linux1_nic" {
+  name                = "${var.linux1}_nic"
+  location            = azurerm_resource_group.cent_rg.location
+  resource_group_name = azurerm_resource_group.cent_rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.cent_servers.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.0.0.50"
+    public_ip_address_id          = azurerm_public_ip.linux1_pip.id
+  }
+}
+
 resource "azurerm_network_interface_security_group_association" "cent_wkstn01_association" {
   network_interface_id      = azurerm_network_interface.cent_wkstn01_nic.id
   network_security_group_id = azurerm_network_security_group.cent_wkstn_nsg.id
@@ -165,5 +197,10 @@ resource "azurerm_network_interface_security_group_association" "cent_wkstn02_as
 
 resource "azurerm_network_interface_security_group_association" "cent_ad_association" {
   network_interface_id      = azurerm_network_interface.cent_ad_nic.id
+  network_security_group_id = azurerm_network_security_group.cent_server_nsg.id
+}
+
+resource "azurerm_network_interface_security_group_association" "cent_linux1_association" {
+  network_interface_id      = azurerm_network_interface.cent_linux1_nic.id
   network_security_group_id = azurerm_network_security_group.cent_server_nsg.id
 }

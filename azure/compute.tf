@@ -4,7 +4,7 @@ resource "azurerm_windows_virtual_machine" "wkstn_01" {
   location            = azurerm_resource_group.cent_rg.location
   size                = "Standard_B2s"
   admin_username      = "adminuser"
-  admin_password      = "P@$$w0rd1234!"
+  admin_password      = random_password.password.result
   network_interface_ids = [
     azurerm_network_interface.cent_wkstn01_nic.id,
   ]
@@ -28,7 +28,7 @@ resource "azurerm_windows_virtual_machine" "wkstn_02" {
   location            = azurerm_resource_group.cent_rg.location
   size                = "Standard_B2s"
   admin_username      = "adminuser"
-  admin_password      = "P@$$w0rd1234!"
+  admin_password      = random_password.password.result
   network_interface_ids = [
     azurerm_network_interface.cent_wkstn02_nic.id,
   ]
@@ -52,7 +52,7 @@ resource "azurerm_windows_virtual_machine" "ad" {
   location            = azurerm_resource_group.cent_rg.location
   size                = "Standard_B2s"
   admin_username      = "adminuser"
-  admin_password      = "P@$$w0rd1234!"
+  admin_password      = random_password.password.result
   network_interface_ids = [
     azurerm_network_interface.cent_ad_nic.id,
   ]
@@ -66,6 +66,31 @@ resource "azurerm_windows_virtual_machine" "ad" {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
     sku       = "2019-Datacenter"
+    version   = "latest"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "linux1" {
+  name                = var.linux1
+  resource_group_name = azurerm_resource_group.cent_rg.name
+  location            = azurerm_resource_group.cent_rg.location
+  size                = "Standard_B1s"
+  admin_username      = "adminuser"
+  admin_password      = random_password.password.result
+  disable_password_authentication = false
+  network_interface_ids = [
+    azurerm_network_interface.cent_linux1_nic.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
     version   = "latest"
   }
 }
