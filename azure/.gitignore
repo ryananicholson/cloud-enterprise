@@ -1,0 +1,24 @@
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+**/dc.yml
+**/wkstn.yml
+**/ubuntu.yml
+**/ad-hosts
+**/wkstn-hosts
+**/configure-systems.sh
+**/ubuntu-hosts
+<<<<<<< HEAD
+<<<<<<< HEAD
+**/log-agent.sh
+=======
+>>>>>>> a592c1fe94b3c53d3b11ab3004652420d0b80b6c
+=======
+>>>>>>> a592c1fe94b3c53d3b11ab3004652420d0b80b6c
