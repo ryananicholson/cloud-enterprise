@@ -69,3 +69,28 @@ sed -i "s@WORKID@$WORKID@g" playbooks/wkstn.yml
 sed -i "s@WORKKEY@$WORKKEY@g" playbooks/wkstn.yml
 sed -i "s@TOKEN@$REGTOKEN@g" playbooks/wkstn.yml 
 ansible-playbook -i wkstn-hosts playbooks/wkstn.yml
+
+# Configure Ubuntu
+wget https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.33-0/omsagent-1.13.33-0.universal.x64.sh -O playbooks/files/log-agent.sh
+if ! [ -z ~/.local/lib/python3.7/site-packages/paramiko ]; then
+  pip3 install paramiko
+fi
+cat << EOF > ubuntu-hosts
+[hosts:children]
+ubuntu
+
+[ubuntu]
+EOF
+UBUNTU=$(az vm list -g $RESOURCE_GROUP | jq -r '.[] | select(.osProfile.linuxConfiguration.disablePasswordAuthentication == false) .name')
+az vm show -d -g $RESOURCE_GROUP -n $UBUNTU --query publicIps -o tsv >> ubuntu-hosts
+cat << 'EOF' >> ubuntu-hosts
+[ubuntu:vars]
+ansible_connection=paramiko
+ansible_ssh_port=22
+ansible_ssh_user=adminuser
+ansible_ssh_pass=PASSWORD
+EOF
+
+sed -i "s@WORKID@$WORKID@g" playbooks/ubuntu.yml
+sed -i "s@WORKKEY@$WORKKEY@g" playbooks/ubuntu.yml
+ansible-playbook -i ubuntu-hosts playbooks/ubuntu.yml

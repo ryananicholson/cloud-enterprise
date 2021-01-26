@@ -1,0 +1,13 @@
+---
+- name: Configure Workstations
+  hosts: ubuntu
+  tasks:
+    - name: Copy Log Analytics Agent
+      ansible.builtin.copy:
+        src: log-agent.sh 
+        dest: /tmp/log-agent.sh
+        mode: '0755'
+    - name: Install Log Analytics Agent
+      command: /tmp/log-agent.sh --install -w WORKID -s WORKKEY
+      become: yes
+      become_method: sudo
