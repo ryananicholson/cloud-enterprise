@@ -93,4 +93,8 @@ EOF
 
 sed -i "s@WORKID@$WORKID@g" playbooks/ubuntu.yml
 sed -i "s@WORKKEY@$WORKKEY@g" playbooks/ubuntu.yml
-ansible-playbook -i ubuntu-hosts playbooks/ubuntu.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ubuntu-hosts playbooks/ubuntu.yml
+WORKNAME=$RESOURCE_GROUP-workspace
+pwsh -c "New-AzOperationalInsightsLinuxSyslogDataSource -ResourceGroupName $RESOURCE_GROUP -WorkspaceName $WORKNAME -Facility \"syslog\" -CollectEmergency -CollectAlert -CollectCritical -CollectError -CollectWarning -Name \"syslog collection\""
+pwsh -c "New-AzOperationalInsightsLinuxSyslogDataSource -ResourceGroupName $RESOURCE_GROUP -WorkspaceName $WORKNAME -Facility \"auth\" -CollectEmergency -CollectAlert -CollectCritical -CollectError -CollectWarning -Name \"auth collection\""
+pwsh -c "New-AzOperationalInsightsLinuxSyslogDataSource -ResourceGroupName $RESOURCE_GROUP -WorkspaceName $WORKNAME -Facility \"kern\" -CollectEmergency -CollectAlert -CollectCritical -CollectError -CollectWarning -Name \"kern collection\""
