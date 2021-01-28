@@ -36,7 +36,7 @@ EOF
 sed -i "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/dc.yml
 sed -i "s@WORKID@$WORKID@g" playbooks/dc.yml
 sed -i "s@WORKKEY@$WORKKEY@g" playbooks/dc.yml
-sed -i "s@TOKEN@$REGTOKEN@g" playbooks/dc.yml 
+sed -i "s@REGTOKEN@$TOKEN@g" playbooks/dc.yml 
 ansible-playbook -i ad-hosts playbooks/dc.yml
 
 # Configure Workstations
@@ -67,7 +67,7 @@ sed -i "s/DOMAIN/$RESOURCE_GROUP/g" playbooks/wkstn.yml
 sed -i "s/DNSADDR/$DNSADDR/g" playbooks/wkstn.yml
 sed -i "s@WORKID@$WORKID@g" playbooks/wkstn.yml
 sed -i "s@WORKKEY@$WORKKEY@g" playbooks/wkstn.yml
-sed -i "s@TOKEN@$REGTOKEN@g" playbooks/wkstn.yml 
+sed -i "s@REGTOKEN@$TOKEN@g" playbooks/wkstn.yml 
 ansible-playbook -i wkstn-hosts playbooks/wkstn.yml
 
 # Configure Ubuntu
